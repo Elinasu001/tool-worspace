@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: demo
+
+  datasource:
+    url: jdbc:oracle:thin:@115.90.212.20:10000:XE
+  
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+
+server:
+  port: 81

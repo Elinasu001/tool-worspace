@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: start
+
+  datasource:
+    url: jdbc:oracle:thin:@115.90.212.20:10000:XE
+
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+  mvc:
+    static-path-pattern: /upload/**
+  web:
+    resources:
+      static-locations: file:uploads/
+    
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+server:
+  port: 8080
+  
+
+mybatis:
+  configuration:
+    jdbc-type-for-null: VARCHAR
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.kh.start.board.model.vo,com.kh.start.board.model.dto
+  mapper-locations: classpath:mapper/*.xml
+  
+jwt:
+  secret: 
