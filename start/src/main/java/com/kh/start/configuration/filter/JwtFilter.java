@@ -101,7 +101,28 @@ public class JwtFilter extends OncePerRequestFilter {
 			log.info("서버에서 만들어진 토큰이 아님");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().write("유효하지 않은 토큰입니다.");
-			
+			/*
+			 * axios.post(url, body, tokens)
+			 * 	.then(result => {
+			 * 	result어쩌고저쩌고
+			 * }).catch(e => {
+			 * 	e. == 토큰 만료
+			 *  axios.post(/auth/refresh, 리프레시토큰값)
+			 *  	.then(result => {
+			 *  			새 토큰 저장소에 저장;
+			 *  			useEffect의 의존성 요소를 변환시켜서 useEffect를 다시 수행; //로그인 유지 상태에서 돌리도록
+			 *  		})
+			 * 		.catch(e =>{
+			 * 			alert("니 로그인 다시해야됨");
+			 * 			useNavi("/login");
+			 * 		}
+			 * })
+			 *정말 오랜만에 로그인 할 때 모든 기간이 지났을 때 다시 처음 부터 로그인 진행
+			 * 
+			 * refresh 왜 쓰는가?
+			 * 
+			 * 
+			 * */
 			return;
 		}
 		

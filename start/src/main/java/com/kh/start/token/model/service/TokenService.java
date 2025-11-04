@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kh.start.exception.CustomAuthenticationException;
 import com.kh.start.token.model.dao.TokenMapper;
 import com.kh.start.token.model.vo.RefreshToken;
 import com.kh.start.token.util.JwtUtil;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -86,6 +88,19 @@ public class TokenService {
 	 * 사용자에게 전달받은 RefreshToken의 DB에 존재하면서 만료기간이 지나지 않았는지를 검증하는 메소드
 	 * 
 	 **/
+	public Map<String, String> validateToken(String refreshToken) {
+		
+		RefreshToken token = tokenMapper.findByToken(refreshToken); // xml에 넣는게 좋음
+		// 없을 수도, 있을 수도, 유효기간이 지났을 수도, 안지났을 수도
+		if(token == null || token.getExpiration() < System.currentTimeMillis()) { 
+			throw new CustomAuthenticationException("권한없는 토큰입니다.");
+		} 
+		// 토큰에서 username 뽑기
+		Claims claims = tokenUtil.parseJwt(refreshToken);
+		String username = claims.getSubject();
+		//createToken(token.getUsername());
+		return createTokens(username);
+	}
 	
 	
 }

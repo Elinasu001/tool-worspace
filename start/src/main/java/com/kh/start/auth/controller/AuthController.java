@@ -2,16 +2,16 @@ package com.kh.start.auth.controller;
 
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.start.auth.model.service.AuthService;
-import com.kh.start.member.model.dto.ChangePasswordDTO;
 import com.kh.start.member.model.dto.MemberDTO;
+import com.kh.start.token.model.service.TokenService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
 	private final AuthService authService;
+	private final TokenService tokenService;
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@Valid @RequestBody MemberDTO member){
@@ -32,9 +33,53 @@ public class AuthController {
 		
 		return ResponseEntity.ok(loginResponse);
 	}
-	
-	
 
+	
+	/**
+	 * @param token
+	 * @return
+	 * 사용자에게 전달받은 RefreshToken의 DB에 존재하면서 만료기간이 지나지 않았는지를 검증하는 메소드
+	 */
+	@PostMapping("/refresh")
+	public ResponseEntity<?> refresh(@RequestBody Map<String, String> token){
+		
+		String refreshToken = token.get("refrechToken");
+		Map<String, String> tokens = tokenService.validateToken(refreshToken);
+		return ResponseEntity.status(HttpStatus.CREATED).body(tokens); // refreshToken 있으면 로그인 유지됨.
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /**

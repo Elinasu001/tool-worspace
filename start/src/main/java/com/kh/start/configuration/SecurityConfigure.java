@@ -75,7 +75,7 @@ public class SecurityConfigure {
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 				.csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(requests -> {
-					requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members").permitAll(); // 누구나 다 허용
+					requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members", "/auth/refresh").permitAll(); // 누구나 다 허용
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated(); // 인증된 애만 넘어갈 수 있음 // ** id 달아야된니깐
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated(); // 인증이 된 친구인지 아닌지 체크하기
 					requests.requestMatchers(HttpMethod.POST, "/boards").authenticated();
