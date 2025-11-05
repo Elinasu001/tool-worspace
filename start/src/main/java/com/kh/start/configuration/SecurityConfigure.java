@@ -92,9 +92,9 @@ public class SecurityConfigure {
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated(); // 인증된 애만 넘어갈 수 있음 // ** id 달아야된니깐
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated(); // 인증이 된 친구인지 아닌지 체크하기
 					requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
-					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**").permitAll(); // 누구나 다 볼 수 있음
+					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**", "/uploads/**").permitAll(); // 누구나 다 볼 수 있음
 					requests.requestMatchers("/amin/**").hasRole("ADMIN"); // 데어테엇 ROLE컬럼 가지고 ADIM인지 ROLE MEMBER인지 본다. 
-				}) // 람다형식으로 보내주기
+				}) // 람다형식으로 보내주기  
 				
 				/**
 				 * sessionManagement: 세션을 어떻게 관리할 것인지 지정 

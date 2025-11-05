@@ -34,7 +34,7 @@ public class FileService {
 		try {
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 			
-			return "http://localhost/uploads/" + originalFilename;
+			return "http://localhost:8080/uploads/" + originalFilename;
 		
 		} catch (IOException e) {
 			throw new RuntimeException("이상요상 파일임");
