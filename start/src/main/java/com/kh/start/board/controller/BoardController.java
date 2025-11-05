@@ -55,7 +55,6 @@ public class BoardController {
 	// Get boards
 	@GetMapping
 	public ResponseEntity<List<BoardDTO>> findAll(
-	    
 	    @RequestParam(name = "page", defaultValue = "0") int pageNo) {
 
 	    //if (pageNo < 0) pageNo = 0; // 음수 방지
