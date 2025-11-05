@@ -1,9 +1,12 @@
 package com.kh.start.configuration;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,9 +17,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// CORS 관련
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+// 사용자 정의 필터
 import com.kh.start.configuration.filter.JwtFilter;
 
 import lombok.RequiredArgsConstructor;
+
 
 /**
  * 2.
@@ -67,6 +77,8 @@ public class SecurityConfigure {
 			csrf 토큰이 없기 때문에 csrf를 꺼줘야 한다.
 			members로 postman 돌려보기
 		*/
+		
+		
 		/*
 		 * ex ) 회원가입, 로그인 => 누구나 다 할 수 있어야 함.
 		 * 		회원정보수정, 회원탈퇴 => 로그인된 사용자만 할 수 있어야함
@@ -74,12 +86,13 @@ public class SecurityConfigure {
 		 */
 		return httpSecurity.formLogin(AbstractHttpConfigurer::disable)
 				.csrf(AbstractHttpConfigurer::disable)
+				.cors(Customizer.withDefaults()) // seruity configuration
 				.authorizeHttpRequests(requests -> {
 					requests.requestMatchers(HttpMethod.POST, "/auth/login", "/members", "/auth/refresh").permitAll(); // 누구나 다 허용
 					requests.requestMatchers(HttpMethod.PUT, "/members", "/boards/**").authenticated(); // 인증된 애만 넘어갈 수 있음 // ** id 달아야된니깐
 					requests.requestMatchers(HttpMethod.DELETE, "/members", "/boards/**").authenticated(); // 인증이 된 친구인지 아닌지 체크하기
-					requests.requestMatchers(HttpMethod.POST, "/boards").authenticated();
-					requests.requestMatchers(HttpMethod.GET, "/boards/**").permitAll();
+					requests.requestMatchers(HttpMethod.POST, "/boards", "/comments").authenticated();
+					requests.requestMatchers(HttpMethod.GET, "/boards/**", "/comments/**").permitAll(); // 누구나 다 볼 수 있음
 					requests.requestMatchers("/amin/**").hasRole("ADMIN"); // 데어테엇 ROLE컬럼 가지고 ADIM인지 ROLE MEMBER인지 본다. 
 				}) // 람다형식으로 보내주기
 				
@@ -92,6 +105,21 @@ public class SecurityConfigure {
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();// 즉, members로 put요청이 오면 노노
 	}
+	
+	
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+	    CorsConfiguration configuration = new CorsConfiguration();
+	    configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+	    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+	    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); //  오타 수정 (Authoriztion → Authorization)
+	    configuration.setAllowCredentials(true);// 혹시나 나중에 추가 할경우 ip(domain)등을 추가 해주면 된다.
+
+	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	    source.registerCorsConfiguration("/**", configuration);
+	    return source;// 리액트 단에서 보내는 요청 여기서 다 받음
+	}// 이거를 filterChain 포함필요
+
 	
 	// 3-3. ROLE 추가
 	@Bean

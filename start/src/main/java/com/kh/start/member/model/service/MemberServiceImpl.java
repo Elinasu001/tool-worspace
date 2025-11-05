@@ -62,7 +62,13 @@ public class MemberServiceImpl implements MemberService {
 			MemberVO signUpMember = new MemberVO(member.getMemberId(), encodedPwd, member.getMemberName(), "ROLE_USER"); 
 			MemberVO 에서 @builder 추가 시 필드가 추가되도 문제가 생기지 않는다.
 		*/
-		MemberVO memberBuilder = MemberVO.builder().memberId(member.getMemberId()).memberPwd(passwordEncoder.encode(member.getMemberPwd())).memberName(member.getMemberName()).role("ROLE_USER").build();
+		MemberVO memberBuilder = MemberVO.builder()
+				.memberId(member.getMemberId())
+				.memberPwd(passwordEncoder.encode(member.getMemberPwd()))
+				//.memberPwd(encodedPwd)
+				.memberName(member.getMemberName())
+				.role("ROLE_USER")
+				.build();
 		
 		// 3-5.매퍼 호출
 		memberMapper.signUp(memberBuilder);
@@ -83,9 +89,10 @@ public class MemberServiceImpl implements MemberService {
 		//  비밀번호가 맞는지 검증  맞다면 암호문 필요(BOOT_MEMBER MEMBER PWD) // 중요한건 여기까지 도착하는 시점에 JWT 거쳐서옴 > DB에서 사용자 정보를 AUTHENTICATION에 담아놈 -> 그럼 요청 전까지는 SESS~ 사용할 수 있음 그럼 이 시점에서 뽑아오자!
 		String currentPassword = password.getCurrentPassword();
 		String encodePassword = user.getPassword();
-		if(!passwordEncoder.matches(encodePassword, currentPassword)) {
-			throw new CustomAuthenticationException ("일치하지 않는 비밀번호");
-		}
+		
+		if (!passwordEncoder.matches(currentPassword, encodePassword)) {
+            throw new CustomAuthenticationException("현재 비밀번호가 일치하지 않습니다.");
+        }
 		
 		// 현재 비밀번호가 맞다면 새 비밀번호를 암호화
 		String newPassword = passwordEncoder.encode(password.getNewPassword());
@@ -130,9 +137,9 @@ public class MemberServiceImpl implements MemberService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		CustomUserDetails user = (CustomUserDetails)auth.getPrincipal();
 		// 검증이 맞다면
-		if(!passwordEncoder.matches(password, user.getPassword())) {
-			throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
-		}
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new CustomAuthenticationException("비밀번호가 일치하지 않습니다.");
+        }
 		// DELETE FROM BOOT_MEMBER WHERE MEMBER_ID = 사용자아이디
 		return user;
 	}
